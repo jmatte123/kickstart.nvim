@@ -97,8 +97,7 @@ return {
         }
       end,
       ['eslint'] = function()
-        local lspconfig = require('lspconfig')
-        require('lspconfig').esling.setup {
+        require('lspconfig').eslint.setup {
           settings = {
             packageManager = 'npm'
           },
