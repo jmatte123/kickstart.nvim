@@ -27,13 +27,15 @@ require('lazy').setup({
 
   -- Detect tabstop and shiftwidth automatically
   'tpope/vim-sleuth',
+  'mg979/vim-visual-multi',
 
+  require 'plugins.null-ls',
   require 'plugins.nvim-lspconfig',
 
   {
     'windwp/nvim-autopairs',
     event = 'InsertEnter',
-    opts = {}
+    opts = {},
   },
 
   require 'plugins.nvim-cmp',
@@ -51,9 +53,9 @@ require('lazy').setup({
   require 'plugins.telescope',
   require 'plugins.nvim-treesitter',
   require 'plugins.nvim-tree',
-  require 'plugins.null-ls',
   require 'plugins.trouble',
   require 'plugins.toggleterm',
+  require 'plugins.flash',
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
@@ -118,10 +120,10 @@ vim.api.nvim_create_autocmd('TextYankPost', {
 })
 
 -- Diagnostic keymaps
-vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
-vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
-vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
-vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
+-- vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous diagnostic message' })
+-- vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next diagnostic message' })
+-- vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Open floating diagnostic message' })
+-- vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostics list' })
 vim.diagnostic.config {
   virtual_text = true,
   signs = true,
@@ -140,6 +142,7 @@ require('which-key').register {
   ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
   ['<leader>t'] = { name = '[T]ree', _ = 'which_key_ignore' },
   ['<leader>x'] = { name = 'Trouble', _ = 'which_key_ignore' },
+  ['<leader>f'] = { name = '[F]lash', _ = 'which_key_ignore' },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`

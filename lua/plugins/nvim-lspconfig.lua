@@ -1,4 +1,4 @@
-local on_attach = function(_, bufnr)
+local on_attach = function(client, bufnr)
   -- NOTE: Remember that lua is a real programming language, and as such it is possible
   -- to define small helper and utility functions so you don't have to repeat yourself
   -- many times.
@@ -29,16 +29,25 @@ local on_attach = function(_, bufnr)
 
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
-  nmap('<leader>wa', vim.lsp.buf.add_workspace_folder, '[W]orkspace [A]dd Folder')
-  nmap('<leader>wr', vim.lsp.buf.remove_workspace_folder, '[W]orkspace [R]emove Folder')
-  nmap('<leader>wl', function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, '[W]orkspace [L]ist Folders')
 
   -- Create a command `:Format` local to the LSP buffer
   vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
     vim.lsp.buf.format()
   end, { desc = 'Format current buffer with LSP' })
+
+  if client.name == 'lua_ls' then
+    vim.api.nvim_create_autocmd('BufWritePre', {
+      buffer = bufnr,
+      callback = function()
+        vim.lsp.buf.format {
+          buffer = bufnr,
+          filter = function(c)
+            return c.name == 'null-ls'
+          end,
+        }
+      end,
+    })
+  end
 end
 
 return {
@@ -53,19 +62,14 @@ return {
 
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
+
+    'rust-lang/rust.vim',
   },
-  config = function(_, opts)
+  config = function()
     require('mason').setup()
     require('mason-lspconfig').setup()
 
     local servers = {
-      -- clangd = {},
-      -- gopls = {},
-      -- pyright = {},
-      -- rust_analyzer = {},
-      -- tsserver = {},
-      -- html = { filetypes = { 'html', 'twig', 'hbs'} },
-
       lua_ls = {
         Lua = {
           workspace = { checkThirdParty = false },
@@ -99,17 +103,29 @@ return {
       ['eslint'] = function()
         require('lspconfig').eslint.setup {
           settings = {
-            packageManager = 'npm'
+            packageManager = 'npm',
           },
           on_attach = function(_, bufnr)
             vim.api.nvim_create_autocmd('BufWritePre', {
               buffer = bufnr,
-              command = 'EslintFixAll'
+              command = 'EslintFixAll',
             })
-          end
+          end,
         }
-      end
+      end,
+      ['rust_analyzer'] = function()
+        require('lspconfig').rust_analyzer.setup {
+          settings = {
+            packageManager = 'cargo',
+          },
+          on_attach = function(_, bufnr)
+            vim.api.nvim_create_autocmd('BufWritePre', {
+              buffer = bufnr,
+              command = 'RustFmt',
+            })
+          end,
+        }
+      end,
     }
-  end
+  end,
 }
-
