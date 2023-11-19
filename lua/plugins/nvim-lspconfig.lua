@@ -1,10 +1,4 @@
 local on_attach = function(client, bufnr)
-  -- NOTE: Remember that lua is a real programming language, and as such it is possible
-  -- to define small helper and utility functions so you don't have to repeat yourself
-  -- many times.
-  --
-  -- In this case, we create a function that lets us more easily define mappings specific
-  -- for LSP related items. It sets the mode, buffer and description for us each time.
   local nmap = function(keys, func, desc)
     if desc then
       desc = 'LSP: ' .. desc
@@ -30,24 +24,31 @@ local on_attach = function(client, bufnr)
   -- Lesser used LSP functionality
   nmap('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
 
-  -- Create a command `:Format` local to the LSP buffer
-  vim.api.nvim_buf_create_user_command(bufnr, 'Format', function(_)
-    vim.lsp.buf.format()
-  end, { desc = 'Format current buffer with LSP' })
+  local format_is_enabled = true
+  vim.api.nvim_create_user_command('ToggleFormatting', function()
+    format_is_enabled = not format_is_enabled
+    print('Setting autoformatting to: ' .. tostring(format_is_enabled))
+  end, {})
 
-  if client.name == 'lua_ls' then
-    vim.api.nvim_create_autocmd('BufWritePre', {
-      buffer = bufnr,
-      callback = function()
-        vim.lsp.buf.format {
-          buffer = bufnr,
-          filter = function(c)
+  vim.api.nvim_create_autocmd('BufWritePre', {
+    buffer = bufnr,
+    group = vim.api.nvim_create_augroup('lsp-format-' .. client.name, { clear = true }),
+    callback = function()
+      if not format_is_enabled then
+        return
+      end
+
+      vim.lsp.buf.format {
+        buffer = bufnr,
+        filter = function(c)
+          if client.name == 'lua_ls' then
             return c.name == 'null-ls'
-          end,
-        }
-      end,
-    })
-  end
+          end
+          return c.id == client.id
+        end,
+      }
+    end,
+  })
 end
 
 return {

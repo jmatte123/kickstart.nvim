@@ -21,10 +21,7 @@ return {
     require('luasnip.loaders.from_vscode').lazy_load()
     luasnip.config.setup {}
 
-    cmp.event:on(
-      'confirm_done',
-      cmp_autopairs.on_confirm_done()
-    )
+    cmp.event:on('confirm_done', cmp_autopairs.on_confirm_done())
 
     cmp.setup {
       enabled = function()
@@ -34,8 +31,7 @@ return {
         if vim.api.nvim_get_mode().mode == 'c' then
           return true
         else
-          return not context.in_treesitter_capture("comment")
-            and not context.in_syntax_group("Comment")
+          return not context.in_treesitter_capture 'comment' and not context.in_syntax_group 'Comment'
         end
       end,
       snippet = {
@@ -77,5 +73,5 @@ return {
         { name = 'luasnip' },
       },
     }
-  end
+  end,
 }

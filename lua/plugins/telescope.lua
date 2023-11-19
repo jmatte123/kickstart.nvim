@@ -22,17 +22,21 @@ return {
         i = {
           ['<C-u>'] = false,
           ['<C-d>'] = false,
-        }
+        },
       },
       file_ignore_patterns = {
-        '.git', 'node_modules', 'build', 'dist', 'package-lock.json'
-      }
+        '.git',
+        'node_modules',
+        'build',
+        'dist',
+        'package-lock.json',
+      },
     },
     pickers = {
       find_files = {
-        hidden = true
-      }
-    }
+        hidden = true,
+      },
+    },
   },
   config = function(_, opts)
     require('telescope').setup(opts)
@@ -54,6 +58,5 @@ return {
     vim.keymap.set('n', '<leader>sg', require('telescope.builtin').live_grep, { desc = '[S]earch by [G]rep' })
     vim.keymap.set('n', '<leader>sd', require('telescope.builtin').diagnostics, { desc = '[S]earch [D]iagnostics' })
     vim.keymap.set('n', '<leader>sr', require('telescope.builtin').resume, { desc = '[S]earch [R]esume' })
-  end
+  end,
 }
-
