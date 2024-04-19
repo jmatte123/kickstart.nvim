@@ -38,6 +38,12 @@ local on_attach = function(client, bufnr)
         return
       end
 
+      if client.name == 'rust_analyzer' then
+        vim.cmd 'RustFmt'
+      elseif client.name == 'eslint' then
+        vim.cmd 'EslintFixAll'
+      end
+
       vim.lsp.buf.format {
         buffer = bufnr,
         filter = function(c)
@@ -71,12 +77,23 @@ return {
     require('mason-lspconfig').setup()
 
     local servers = {
+      docker_compose_language_service = {},
+      dockerls = {},
+      eslint = { packageManager = 'npm' },
+      jsonls = {},
+      kotlin_language_server = {},
       lua_ls = {
         Lua = {
           workspace = { checkThirdParty = false },
           telemetry = { enable = false },
         },
       },
+      pylsp = {},
+      rust_analyzer = {},
+      tailwindcss = {},
+      textlint = {},
+      tsserver = {},
+      yamlls = {},
     }
 
     require('neodev').setup()
@@ -93,14 +110,6 @@ return {
     }
 
     mason_lspconfig.setup_handlers {
-      function(server_name)
-        require('lspconfig')[server_name].setup {
-          capabilities = capabilities,
-          on_attach = on_attach,
-          settings = servers[server_name],
-          filetypes = (servers[server_name] or {}).filetypes,
-        }
-      end,
       ['eslint'] = function()
         require('lspconfig').eslint.setup {
           settings = {
@@ -114,17 +123,12 @@ return {
           end,
         }
       end,
-      ['rust_analyzer'] = function()
-        require('lspconfig').rust_analyzer.setup {
-          settings = {
-            packageManager = 'cargo',
-          },
-          on_attach = function(_, bufnr)
-            vim.api.nvim_create_autocmd('BufWritePre', {
-              buffer = bufnr,
-              command = 'RustFmt',
-            })
-          end,
+      function(server_name)
+        require('lspconfig')[server_name].setup {
+          capabilities = capabilities,
+          on_attach = on_attach,
+          settings = servers[server_name],
+          filetypes = (servers[server_name] or {}).filetypes,
         }
       end,
     }

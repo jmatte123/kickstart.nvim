@@ -8,17 +8,8 @@ return {
     },
     sections = {
       lualine_a = { 'mode' },
-      lualine_b = { 'branch', 'diff' },
-      lualine_c = {
-        {
-          'buffers',
-          icons_enabled = false,
-          buffers_color = {
-            active = 'lualine_a_normal',
-            inactive = 'lualine_b_inactive',
-          },
-        },
-      },
+      lualine_b = { 'diff' },
+      lualine_c = { 'branch' },
       lualine_x = { 'filetype' },
       lualine_y = { 'progress' },
       lualine_z = { 'location' },
