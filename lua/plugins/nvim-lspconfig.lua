@@ -91,7 +91,6 @@ return {
       pylsp = {},
       rust_analyzer = {},
       tailwindcss = {},
-      textlint = {},
       tsserver = {},
       yamlls = {},
     }
