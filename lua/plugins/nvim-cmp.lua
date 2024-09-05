@@ -1,3 +1,14 @@
+local function is_telescope_active()
+  for _, win in ipairs(vim.api.nvim_list_wins()) do
+    local buf = vim.api.nvim_win_get_buf(win)
+    local buf_name = vim.api.nvim_buf_get_name(buf)
+    if buf_name:match('Telescope') then
+      return true
+    end
+  end
+  return false
+end
+
 return {
   'hrsh7th/nvim-cmp',
   dependencies = {
@@ -28,11 +39,7 @@ return {
         -- disable completion in comments
         local context = require 'cmp.config.context'
         -- keep command mode completion enabled when cursor is in a comment
-        if vim.api.nvim_get_mode().mode == 'c' then
-          return true
-        else
-          return not context.in_treesitter_capture 'comment' and not context.in_syntax_group 'Comment'
-        end
+        return not context.in_treesitter_capture 'comment' and not context.in_syntax_group 'Comment' and not is_telescope_active()
       end,
       snippet = {
         expand = function(args)

@@ -57,6 +57,7 @@ require('lazy').setup({
   require 'plugins.toggleterm',
   require 'plugins.flash',
   require 'plugins.harpoon',
+  -- require 'plugins.avante',
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
