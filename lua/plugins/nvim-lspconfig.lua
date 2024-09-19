@@ -90,9 +90,17 @@ return {
       },
       pylsp = {},
       gopls = {},
-      rust_analyzer = {},
+      rust_analyzer = {
+        settings = {
+          rustfmt = {
+            enable = true, -- Enable rustfmt integration
+          },
+          diagnostics = {
+            enable = true,
+          },
+        },
+      },
       tailwindcss = {},
-      tsserver = {},
       yamlls = {},
     }
 
@@ -109,8 +117,6 @@ return {
       ensure_installed = vim.tbl_keys(servers),
     }
 
-    local lspconfig = require 'lspconfig'
-
     mason_lspconfig.setup_handlers {
       function(server_name)
         require('lspconfig')[server_name].setup {
@@ -120,30 +126,19 @@ return {
           filetypes = (servers[server_name] or {}).filetypes,
         }
       end,
-    }
-
-    lspconfig.eslint.setup {
-      settings = {
-        packageManager = 'npm',
-      },
-      on_attach = function(_, bufnr)
-        vim.api.nvim_create_autocmd('BufWritePre', {
-          buffer = bufnr,
-          command = 'EslintFixAll',
-        })
+      ['eslint'] = function()
+        require('lspconfig').eslint.setup {
+          settings = {
+            packageManager = 'npm',
+          },
+          on_attach = function(_, bufnr)
+            vim.api.nvim_create_autocmd('BufWritePre', {
+              buffer = bufnr,
+              command = 'EslintFixAll',
+            })
+          end,
+        }
       end,
-    }
-    lspconfig.rust_analyzer.setup {
-      settings = {
-        rustfmt = {
-          enable = true, -- Enable rustfmt integration
-          extraArgs = { '--edition', '2021' }, -- doesn't do shit
-        },
-        diagnostics = {
-          enable = true,
-        },
-      },
-      on_attach = on_attach,
     }
   end,
 }

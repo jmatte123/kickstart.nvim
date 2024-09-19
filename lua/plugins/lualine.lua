@@ -5,6 +5,10 @@ return {
       icons_enabled = true,
       theme = 'NeoSolarized',
       component_separators = { left = '|', right = '|' },
+      disabled_filetypes = {
+        statusline = { 'Avante', 'AvanteInput' },
+        winbar = { 'Avante', 'AvanteInput' },
+      },
     },
     sections = {
       lualine_a = { 'mode' },
