@@ -29,7 +29,7 @@ require('lazy').setup({
   'tpope/vim-sleuth',
   'mg979/vim-visual-multi',
 
-  require 'plugins.null-ls',
+  require 'plugins.conform',
   require 'plugins.nvim-lspconfig',
 
   {

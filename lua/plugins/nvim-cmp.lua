@@ -2,7 +2,7 @@ local function is_telescope_active()
   for _, win in ipairs(vim.api.nvim_list_wins()) do
     local buf = vim.api.nvim_win_get_buf(win)
     local buf_name = vim.api.nvim_buf_get_name(buf)
-    if buf_name:match('Telescope') then
+    if buf_name:match 'Telescope' then
       return true
     end
   end
@@ -57,7 +57,9 @@ return {
           select = true,
         },
         ['<Tab>'] = cmp.mapping(function(fallback)
-          if cmp.visible() then
+          if require('copilot.suggestion').is_visible() then
+            require('copilot.suggestion').accept()
+          elseif cmp.visible() then
             cmp.select_next_item()
           elseif luasnip.expand_or_locally_jumpable() then
             luasnip.expand_or_jump()

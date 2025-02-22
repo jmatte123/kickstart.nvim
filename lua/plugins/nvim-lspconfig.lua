@@ -30,6 +30,19 @@ local on_attach = function(client, bufnr)
     print('Setting autoformatting to: ' .. tostring(format_is_enabled))
   end, {})
 
+  if client.name == 'jsonls' then
+    vim.opt.foldmethod = 'expr'
+    vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+    vim.opt.foldcolumn = '0'
+    vim.opt.foldtext = 'v:folddashes.substitute(getline(v:foldstart), "/\\*\\|*/\\|{{{\\d\\=","", "g")'
+    vim.opt.foldlevel = 3
+    vim.opt.foldlevels = 3
+
+    vim.op_local.tabstop = 2
+    vim.opt_local.shiftwidth = 2
+    vim.opt_local.expandtab = true
+  end
+
   vim.api.nvim_create_autocmd('BufWritePre', {
     buffer = bufnr,
     group = vim.api.nvim_create_augroup('lsp-format-' .. client.name, { clear = true }),
@@ -37,22 +50,7 @@ local on_attach = function(client, bufnr)
       if not format_is_enabled then
         return
       end
-
-      if client.name == 'rust_analyzer' then
-        vim.cmd 'RustFmt'
-      elseif client.name == 'eslint' then
-        vim.cmd 'EslintFixAll'
-      end
-
-      vim.lsp.buf.format {
-        buffer = bufnr,
-        filter = function(c)
-          if client.name == 'lua_ls' then
-            return c.name == 'null-ls'
-          end
-          return c.id == client.id
-        end,
-      }
+      require('conform').format { bufnr = bufnr }
     end,
   })
 end
@@ -89,7 +87,13 @@ return {
         },
       },
       pylsp = {},
-      gopls = {},
+      gopls = {
+        settings = {
+          gopls = {
+            gofumpt = true,
+          },
+        },
+      },
       rust_analyzer = {
         settings = {
           rustfmt = {

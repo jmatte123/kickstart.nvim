@@ -4,6 +4,7 @@ return {
   lazy = false,
   version = false,
   opts = {
+    auto_suggestions_provider = 'copilot',
     behavior = {
       auto_suggestions = true, -- Experimental stage
     },
@@ -14,7 +15,21 @@ return {
     'nvim-lua/plenary.nvim',
     'MunifTanjim/nui.nvim',
     'nvim-tree/nvim-web-devicons', -- or echasnovski/mini.icons
-
+    {
+      'zbirenbaum/copilot.lua', -- for providers='copilot'
+      cmd = 'Copilot',
+      event = 'InsertEnter',
+      config = function()
+        require('copilot').setup {
+          panel = {
+            enabled = false,
+          },
+          suggestion = {
+            auto_trigger = true,
+          },
+        }
+      end,
+    },
     {
       'HakonHarnes/img-clip.nvim',
       event = 'VeryLazy',
