@@ -36,9 +36,8 @@ local on_attach = function(client, bufnr)
     vim.opt.foldcolumn = '0'
     vim.opt.foldtext = 'v:folddashes.substitute(getline(v:foldstart), "/\\*\\|*/\\|{{{\\d\\=","", "g")'
     vim.opt.foldlevel = 3
-    vim.opt.foldlevels = 3
 
-    vim.op_local.tabstop = 2
+    vim.opt_local.tabstop = 2
     vim.opt_local.shiftwidth = 2
     vim.opt_local.expandtab = true
   end
@@ -63,27 +62,35 @@ return {
     'williamboman/mason-lspconfig.nvim',
 
     -- Useful status updates for LSP
-    { 'j-hui/fidget.nvim', tag = 'legacy', opts = {} },
+    { 'j-hui/fidget.nvim', opts = {} },
 
     -- Additional lua configuration, makes nvim stuff amazing!
     'folke/neodev.nvim',
 
     'rust-lang/rust.vim',
+    { 'folke/lazydev.nvim', ft = 'lua', opts = {} },
   },
   config = function()
     require('mason').setup()
-    require('mason-lspconfig').setup()
+    local mason_lspconfig = require 'mason-lspconfig'
 
     local servers = {
       docker_compose_language_service = {},
       dockerls = {},
-      eslint = { packageManager = 'npm' },
+      eslint = {
+        settings = {
+          packageManager = 'npm',
+        },
+      },
       jsonls = {},
       kotlin_language_server = {},
       lua_ls = {
-        Lua = {
-          workspace = { checkThirdParty = false },
-          telemetry = { enable = false },
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { 'vim' },
+            },
+          },
         },
       },
       pylsp = {},
@@ -108,41 +115,26 @@ return {
       yamlls = {},
     }
 
-    require('neodev').setup()
-
     -- nvim-cmp supports additional completion capabilities, so broadcast that to servers
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = require('cmp_nvim_lsp').default_capabilities(capabilities)
-
-    -- Ensure the servers above are installed
-    local mason_lspconfig = require 'mason-lspconfig'
 
     mason_lspconfig.setup {
       ensure_installed = vim.tbl_keys(servers),
     }
 
-    mason_lspconfig.setup_handlers {
-      function(server_name)
-        require('lspconfig')[server_name].setup {
+    -- default setup
+    for name, server in pairs(servers) do
+      if name ~= 'eslint' then
+        vim.lsp.config(name, {
           capabilities = capabilities,
           on_attach = on_attach,
-          settings = servers[server_name],
-          filetypes = (servers[server_name] or {}).filetypes,
-        }
-      end,
-      ['eslint'] = function()
-        require('lspconfig').eslint.setup {
-          settings = {
-            packageManager = 'npm',
-          },
-          on_attach = function(_, bufnr)
-            vim.api.nvim_create_autocmd('BufWritePre', {
-              buffer = bufnr,
-              command = 'EslintFixAll',
-            })
-          end,
-        }
-      end,
-    }
+          settings = server.settings,
+          filetypes = server.filetypes,
+        })
+
+        vim.lsp.enable(name)
+      end
+    end
   end,
 }

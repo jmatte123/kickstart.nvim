@@ -7,19 +7,21 @@ vim.g.loaded_netrwPlugin = 1
 
 -- :help lazy.nvim.txt` for more info
 local lazypath = vim.fn.stdpath 'data' .. '/lazy/lazy.nvim'
-if not vim.loop.fs_stat(lazypath) then
-  vim.fn.system {
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  }
+if not vim.uv.fs_stat(lazypath) then
+  vim
+    .system({
+      'git',
+      'clone',
+      '--filter=blob:none',
+      'https://github.com/folke/lazy.nvim.git',
+      '--branch=stable',
+      lazypath,
+    })
+    :wait()
 end
 vim.opt.rtp:prepend(lazypath)
 
-require('lazy').setup({
+require('lazy').setup {
 
   -- Git related plugins
   'tpope/vim-fugitive',
@@ -29,6 +31,7 @@ require('lazy').setup({
   'tpope/vim-sleuth',
   'mg979/vim-visual-multi',
 
+  require 'plugins.mason',
   require 'plugins.conform',
   require 'plugins.nvim-lspconfig',
 
@@ -47,9 +50,7 @@ require('lazy').setup({
   -- Add indentation guides even on blank lines
   { 'lukas-reineke/indent-blankline.nvim', main = 'ibl', opts = {} },
 
-  -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
-
+  require 'plugins.comment',
   require 'plugins.telescope',
   require 'plugins.nvim-treesitter',
   require 'plugins.nvim-tree',
@@ -57,14 +58,14 @@ require('lazy').setup({
   require 'plugins.toggleterm',
   require 'plugins.flash',
   require 'plugins.harpoon',
-  require 'plugins.avante',
+  -- require 'plugins.avante',
 
   -- NOTE: Next Step on Your Neovim Journey: Add/Configure additional "plugins" for kickstart
   --       These are some example plugins that I've included in the kickstart repository.
   --       Uncomment any of the lines below to enable them.
   -- require 'kickstart.plugins.autoformat',
   -- require 'plugins.debug',
-}, {})
+}
 
 -- See `:help vim.o`
 -- Set highlight on search
